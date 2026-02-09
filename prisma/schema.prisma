@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id            Int            @id @default(autoincrement())
+  nombre        String
+  email         String         @unique
+  passwordHash  String
+  rol           String
+  fechaRegistro DateTime       @default(now())
+
+  fotos         FotoUsuario[]
+  carrito       Carrito?
+  pedidos       Pedido[]
+  historial     HistorialPrueba[]
+}
+
+model FotoUsuario {
+  id        Int      @id @default(autoincrement())
+  url       String
+  fecha     DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+}
+
+model Categoria {
+  id      Int      @id @default(autoincrement())
+  nombre  String   @unique
+  prendas Prenda[]
+}
+
+model Marca {
+  id      Int      @id @default(autoincrement())
+  nombre  String   @unique
+  prendas Prenda[]
+}
+
+model Talla {
+  id       Int              @id @default(autoincrement())
+  nombre   String           @unique
+  variantes PrendaVariante[]
+}
+
+model Color {
+  id       Int              @id @default(autoincrement())
+  nombre   String           @unique
+  variantes PrendaVariante[]
+}
+
+model Prenda {
+  id          Int              @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  imagenUrl   String?
+
+  categoria   Categoria        @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+
+  marca       Marca            @relation(fields: [marcaId], references: [id])
+  marcaId     Int
+
+  variantes   PrendaVariante[]
+  outfits     OutfitPrenda[]
+}
+
+model PrendaVariante {
+  id        Int      @id @default(autoincrement())
+  stock     Int      @default(0)
+
+  prenda    Prenda   @relation(fields: [prendaId], references: [id])
+  prendaId  Int
+
+  talla     Talla    @relation(fields: [tallaId], references: [id])
+  tallaId   Int
+
+  color     Color    @relation(fields: [colorId], references: [id])
+  colorId   Int
+
+  carritoDetalles CarritoDetalle[]
+  pedidoDetalles  PedidoDetalle[]
+}
+
+model Outfit {
+  id        Int             @id @default(autoincrement())
+  imagenUrl String
+  fecha     DateTime        @default(now())
+
+  prendas   OutfitPrenda[]
+}
+
+model OutfitPrenda {
+  id        Int      @id @default(autoincrement())
+
+  outfit    Outfit   @relation(fields: [outfitId], references: [id])
+  outfitId  Int
+
+  prenda    Prenda   @relation(fields: [prendaId], references: [id])
+  prendaId  Int
+}
+
+model Carrito {
+  id        Int              @id @default(autoincrement())
+
+  usuario   Usuario          @relation(fields: [usuarioId], references: [id])
+  usuarioId Int              @unique
+
+  detalles  CarritoDetalle[]
+}
+
+model CarritoDetalle {
+  id         Int             @id @default(autoincrement())
+  cantidad   Int             @default(1)
+
+  carrito    Carrito         @relation(fields: [carritoId], references: [id])
+  carritoId  Int
+
+  variante   PrendaVariante  @relation(fields: [varianteId], references: [id])
+  varianteId Int
+}
+
+model Pedido {
+  id        Int              @id @default(autoincrement())
+  fecha     DateTime         @default(now())
+  total     Float
+
+  usuario   Usuario          @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+
+  detalles  PedidoDetalle[]
+}
+
+model PedidoDetalle {
+  id         Int             @id @default(autoincrement())
+  cantidad   Int
+  precio     Float
+
+  pedido     Pedido          @relation(fields: [pedidoId], references: [id])
+  pedidoId   Int
+
+  variante   PrendaVariante  @relation(fields: [varianteId], references: [id])
+  varianteId Int
+}
+
+model HistorialPrueba {
+  id          Int      @id @default(autoincrement())
+  imagenUrl   String
+  fecha       DateTime @default(now())
+
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+
+  prenda      Prenda   @relation(fields: [prendaId], references: [id])
+  prendaId    Int
+}
