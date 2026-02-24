@@ -1,21 +1,31 @@
+import { Routes, Route } from "react-router-dom";
+
 import Hero from "./components/landing/Hero";
 import Navbar from "./components/landing/Navbar";
 import CallToAction from "./components/landing/CallToAction";
+import Login from "./pages/Login";
+import Register from "./pages/Register"; // ← AÑADIDO
 
 function App() {
-  const handleLogin = () => {
-    alert("Aquí irá tu pantalla de login");
-  };
-
-  const handleRegister = () => {
-    alert("Aquí irá tu pantalla de registro");
-  };
-
   return (
     <div>
-      <Navbar onLogin={handleLogin} onRegister={handleRegister} />
-      <Hero />
-      <CallToAction />
+      <Navbar />
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
+              <CallToAction />
+            </>
+          }
+        />
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/register" element={<Register />} /> {/* ← AÑADIDO */}
+      </Routes>
     </div>
   );
 }

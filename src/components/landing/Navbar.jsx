@@ -1,4 +1,8 @@
-export default function Navbar({ onLogin, onRegister }) {
+import { useNavigate } from "react-router-dom";
+
+export default function Navbar() {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -15,7 +19,7 @@ export default function Navbar({ onLogin, onRegister }) {
     >
       <div style={{ display: "flex", gap: "15px" }}>
         <button
-          onClick={onLogin}
+          onClick={() => navigate("/login")}
           style={{
             padding: "10px 20px",
             borderRadius: "8px",
@@ -29,7 +33,7 @@ export default function Navbar({ onLogin, onRegister }) {
         </button>
 
         <button
-          onClick={onRegister}
+          onClick={() => navigate("/register")}
           style={{
             padding: "10px 20px",
             borderRadius: "8px",
