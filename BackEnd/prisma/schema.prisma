@@ -4,10 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // O "mysql" / "sqlite" según uses
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
 }
-
 // 1. Usuarios y Perfil
 model Usuario {
   id        Int      @id @default(autoincrement())

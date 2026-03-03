@@ -5,21 +5,19 @@ async function main() {
   console.log("🛠️ Probando la base de datos de OutfitLab...");
 
   try {
-    // 1. Crear un usuario de prueba
     const nuevoUsuario = await prisma.usuario.create({
       data: {
         nombre: "Alex Test",
-        email: `alex_${Date.now()}@test.com`, // Email único para cada prueba
+        email: `alex_${Date.now()}@test.com`, 
         password: "password123"
       }
     });
     console.log("✅ Usuario creado:", nuevoUsuario.nombre);
 
-    // 2. Crear un Outfit para ese usuario
     const nuevoOutfit = await prisma.outfit.create({
   data: {
     usuarioId: nuevoUsuario.id,
-    imagenGenerada: "https://api-ia.com/resultado_maniqui_3d.jpg" // Cambiado de imagenUrl a imagenGenerada
+    imagenGenerada: "https://api-ia.com/resultado_maniqui_3d.jpg"
   }
 });
     console.log("✅ Outfit guardado con ID:", nuevoOutfit.id);
