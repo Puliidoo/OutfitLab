@@ -4,7 +4,9 @@ import Hero from "./components/landing/Hero";
 import Navbar from "./components/landing/Navbar";
 import CallToAction from "./components/landing/CallToAction";
 import Login from "./pages/Login";
-import Register from "./pages/Register"; // ← AÑADIDO
+import Register from "./pages/Register"; 
+import Catalogo from "./pages/Catalogo";
+
 
 function App() {
   return (
@@ -24,7 +26,9 @@ function App() {
 
         <Route path="/login" element={<Login />} />
 
-        <Route path="/register" element={<Register />} /> {/* ← AÑADIDO */}
+        <Route path="/register" element={<Register />} /> 
+        <Route path="/catalogo" element={<Catalogo />} />
+
       </Routes>
     </div>
   );
