@@ -1,51 +1,92 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  const navigate = useNavigate();
-
   return (
-    <div
+    <nav
       style={{
         width: "100%",
         padding: "20px 40px",
+        backgroundColor: "#1e1e1e",
         display: "flex",
-        justifyContent: "flex-start",
+        justifyContent: "flex-start",   // ← Mueve todo hacia la izquierda
         alignItems: "center",
-        background: "#2a2a2a",
-        position: "sticky",
+        gap: "40px",                     // ← Espacio entre logo y botones
+        position: "fixed",
         top: 0,
-        zIndex: 10,
+        left: 0,
+        zIndex: 100,
+        boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
       }}
     >
-      <div style={{ display: "flex", gap: "15px" }}>
-        <button
-          onClick={() => navigate("/login")}
+      {/* LOGO */}
+      <Link to="/" style={{ textDecoration: "none" }}>
+        <h1
           style={{
-            padding: "10px 20px",
-            borderRadius: "8px",
-            border: "none",
-            background: "#444",
             color: "white",
-            cursor: "pointer",
+            fontSize: "1.8rem",
+            fontWeight: "600",
           }}
         >
-          Iniciar sesión
-        </button>
+          OutfitLab
+        </h1>
+      </Link>
 
-        <button
-          onClick={() => navigate("/register")}
-          style={{
-            padding: "10px 20px",
-            borderRadius: "8px",
-            border: "none",
-            background: "#666",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          Crear cuenta
-        </button>
+      {/* BOTONES */}
+      <div style={{ display: "flex", gap: "15px" }}>
+        <Link to="/catalogo">
+          <button
+            style={{
+              padding: "10px 18px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#333",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#444")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
+          >
+            Catálogo
+          </button>
+        </Link>
+
+        <Link to="/login">
+          <button
+            style={{
+              padding: "10px 18px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#444",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#444")}
+          >
+            Iniciar sesión
+          </button>
+        </Link>
+
+        <Link to="/register">
+          <button
+            style={{
+              padding: "10px 18px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#555",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#666")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#555")}
+          >
+            Registrarse
+          </button>
+        </Link>
       </div>
-    </div>
+    </nav>
   );
 }
