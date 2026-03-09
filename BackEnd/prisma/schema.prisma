@@ -1,0 +1,67 @@
+// Configuración básica
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+// 1. Usuarios y Perfil
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  password  String
+  outfits   Outfit[]
+  carrito   Carrito?
+  fecha     DateTime @default(now())
+}
+
+// 2. Las prendas individuales (Marcas, tipos, etc.)
+model Prenda {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  marca        String
+  categoria    String         // Ej: "Camiseta", "Pantalón"
+  imagenUrl    String         // Foto original de la marca
+  outfitPrenda OutfitPrenda[]
+}
+
+// 3. El Conjunto (Lo que se manda a la IA)
+model Outfit {
+  id             Int            @id @default(autoincrement())
+  nombre         String?        // Ej: "Look Verano"
+  usuario        Usuario        @relation(fields: [usuarioId], references: [id])
+  usuarioId      Int
+  
+  // Resultado de la IA
+  imagenGenerada String?        // URL de la imagen del maniquí 3D
+  
+  prendas        OutfitPrenda[]
+  fecha          DateTime       @default(now())
+}
+
+// Tabla intermedia para la relación N a N entre Outfits y Prendas
+model OutfitPrenda {
+  id       Int    @id @default(autoincrement())
+  outfit   Outfit @relation(fields: [outfitId], references: [id])
+  outfitId Int
+  prenda   Prenda @relation(fields: [prendaId], references: [id])
+  prendaId Int
+}
+
+// 4. Carrito (Para compras si las marcas tienen tienda)
+model Carrito {
+  id        Int              @id @default(autoincrement())
+  usuario   Usuario          @relation(fields: [usuarioId], references: [id])
+  usuarioId Int              @unique
+  detalles  CarritoDetalle[]
+}
+
+model CarritoDetalle {
+  id        Int     @id @default(autoincrement())
+  carrito   Carrito @relation(fields: [carritoId], references: [id])
+  carritoId Int
+  prendaId  Int
+  cantidad  Int     @default(1)
+}
