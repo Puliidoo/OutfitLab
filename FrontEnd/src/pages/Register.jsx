@@ -1,66 +1,37 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import axios from "axios";
-
-// Estilos fuera del componente para mayor limpieza
-const inputStyle = { 
-  padding: "12px", 
-  borderRadius: "8px", 
-  border: "1px solid #444", 
-  backgroundColor: "#1e1e1e", 
-  color: "white",
-  fontSize: "1rem"
-};
-
-const buttonStyle = { 
-  marginTop: "10px", 
-  padding: "12px", 
-  borderRadius: "8px", 
-  border: "none",
-  backgroundColor: "#444", 
-  color: "white", 
-  fontSize: "1.1rem",
-  cursor: "pointer",
-  transition: "0.3s"
-};
 
 export default function Register() {
   const navigate = useNavigate();
-
+  
+  // Estado para capturar los datos
   const [formData, setFormData] = useState({
-    nombre: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmarPassword: ""
   });
-
-  const handleChange = (e) => {
-    setFormData({ 
-      ...formData, 
-      [e.target.name]: e.target.value 
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    // Validación rápida de contraseña
+    if (formData.password !== formData.confirmarPassword) {
       alert("Las contraseñas no coinciden");
       return;
     }
 
     try {
-      // Llamada al BackEnd
-      const response = await axios.post("http://localhost:3000/api/usuarios", {
-        nombre: formData.nombre,
+      // Intentamos enviar los datos al BackEnd
+      const res = await axios.post("http://localhost:3000/api/usuarios", {
         email: formData.email,
         password: formData.password
       });
 
-      if (response.status === 201) {
-        alert("¡Usuario creado con éxito!");
-        navigate("/"); 
+      if (res.status === 201 || res.status === 200) {
+        alert("¡Cuenta creada con éxito!");
+        navigate("/"); // Nos manda de vuelta al Login
       }
     } catch (error) {
       console.error("Error al registrar:", error);
@@ -69,56 +40,138 @@ export default function Register() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: "#1e1e1e", padding: "40px 20px" }}>
-      
+    <div style={containerStyle}>
+      {/* TÍTULO DE LA MARCA */}
       <motion.h1 
-        initial={{ opacity: 0, y: 40 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        style={{ fontSize: "3rem", color: "#f0f0f0", marginBottom: "20px" }}
+        initial={{ y: -50, opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        style={logoStyle}
       >
-        Crear cuenta
+        OUTFITLAB
       </motion.h1>
 
-      <motion.form 
-        onSubmit={handleSubmit}
-        style={{ backgroundColor: "#2a2a2a", padding: "30px 40px", borderRadius: "12px", display: "flex", flexDirection: "column", gap: "20px", width: "100%", maxWidth: "400px", boxShadow: "0px 0px 20px rgba(0,0,0,0.4)" }}
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }} 
+        style={cardStyle}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd" }}>Nombre</label>
-          <input name="nombre" value={formData.nombre} onChange={handleChange} type="text" placeholder="Tu nombre" required style={inputStyle} />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd" }}>Email</label>
-          <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="Introduce tu email" required style={inputStyle} />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd" }}>Contraseña</label>
-          <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="Crea una contraseña" required style={inputStyle} />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd" }}>Confirmar contraseña</label>
-          <input name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} type="password" placeholder="Repite la contraseña" required style={inputStyle} />
-        </div>
-
-        <button 
-          type="submit" 
-          style={buttonStyle}
-          onMouseOver={(e) => e.target.style.backgroundColor = "#555"}
-          onMouseOut={(e) => e.target.style.backgroundColor = "#444"}
-        >
+        <h2 style={{ color: "white", textAlign: "center", marginBottom: "20px" }}>
           Crear cuenta
-        </button>
-      </motion.form>
+        </h2>
 
-      <button 
-        onClick={() => navigate("/")} 
-        style={{ marginTop: "25px", background: "none", border: "none", color: "#ccc", cursor: "pointer", textDecoration: "underline" }}
-      >
-        Volver al inicio
-      </button>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div style={inputGroup}>
+            <label style={labelStyle}>Correo electrónico</label>
+            <input 
+              type="email" 
+              required
+              placeholder="ejemplo@correo.com" 
+              style={inputStyle} 
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+            />
+          </div>
+
+          <div style={inputGroup}>
+            <label style={labelStyle}>Contraseña</label>
+            <input 
+              type="password" 
+              required
+              placeholder="Mínimo 6 caracteres" 
+              style={inputStyle} 
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+            />
+          </div>
+
+          <div style={inputGroup}>
+            <label style={labelStyle}>Repetir contraseña</label>
+            <input 
+              type="password" 
+              required
+              placeholder="Confirma tu contraseña" 
+              style={inputStyle} 
+              onChange={(e) => setFormData({...formData, confirmarPassword: e.target.value})}
+            />
+          </div>
+
+          <button type="submit" style={buttonStyle}>
+            Registrarme
+          </button>
+        </form>
+
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <p 
+            onClick={() => navigate("/")} 
+            style={{ color: "#3498db", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold" }}
+          >
+            ¿Ya tienes cuenta? Inicia sesión aquí
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 }
+
+// --- ESTILOS ---
+const containerStyle = {
+  minHeight: "100vh",
+  backgroundColor: "#121212",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  fontFamily: "Arial, sans-serif",
+  padding: "20px"
+};
+
+const logoStyle = {
+  fontSize: "3rem",
+  fontWeight: "900",
+  letterSpacing: "8px",
+  color: "white",
+  marginBottom: "30px",
+  textAlign: "center"
+};
+
+const cardStyle = {
+  backgroundColor: "#1e1e1e",
+  padding: "30px",
+  borderRadius: "15px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+  width: "100%",
+  maxWidth: "380px"
+};
+
+const inputGroup = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "5px"
+};
+
+const labelStyle = {
+  color: "#bbb",
+  fontSize: "0.85rem",
+  marginLeft: "5px"
+};
+
+const inputStyle = {
+  padding: "12px",
+  borderRadius: "8px",
+  border: "1px solid #333",
+  backgroundColor: "#252525",
+  color: "white",
+  outline: "none",
+  fontSize: "1rem"
+};
+
+const buttonStyle = {
+  marginTop: "10px",
+  padding: "14px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#ffffff",
+  color: "#000",
+  fontWeight: "bold",
+  fontSize: "1rem",
+  cursor: "pointer",
+  transition: "0.2s"
+};

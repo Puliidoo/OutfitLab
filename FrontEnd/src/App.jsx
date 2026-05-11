@@ -1,44 +1,26 @@
-import { useState } from "react";
-import Hero from "./components/landing/Hero";
-import Navbar from "./components/landing/Navbar";
-import CallToAction from "./components/landing/CallToAction";
-import Register from "./components/Register";
-import Profile from "./components/Profile";
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Catalogo from "./pages/Catalogo";
+import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
 
-function App() {
-  const [screen, setScreen] = useState("home");
-  const [user, setUser] = useState(null);
-
-  const handleRegister = () => setScreen("register");
-  const handleBack = () => setScreen("home");
-
-  const handleProfile = (userData) => {
-    setUser(userData);
-    setScreen("profile");
-  };
-
+export default function App() {
   return (
-    <div>
-      {screen === "home" && (
-        <>
-          <Navbar onRegister={handleRegister} />
-          <Hero />
-          <CallToAction />
-        </>
-      )}
-
-      {screen === "register" && (
-        <Register
-          onBack={handleBack}
-          onSubmit={handleProfile}
-        />
-      )}
-
-      {screen === "profile" && (
-        <Profile user={user} onBack={handleBack} />
-      )}
-    </div>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/dashboard" element={
+        <PrivateRoute>
+          <Dashboard />
+        </PrivateRoute>
+      } />
+      <Route path="/catalogo" element={
+        <PrivateRoute>
+          <Catalogo />
+        </PrivateRoute>
+      } />
+    </Routes>
   );
 }
-
-export default App;

@@ -1,141 +1,102 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      // 1. Llamada al BackEnd
+      const res = await axios.post("http://localhost:3000/api/login", formData);
+
+      if (res.status === 200) {
+        // 2. GUARDAR DATOS CLAVE
+        // Guardamos el email porque el PrivateRoute lo necesita para dejarte pasar
+        localStorage.setItem("userEmail", formData.email);
+        // Opcional: Guardamos el nombre por si quieres mostrarlo en el Dashboard
+        localStorage.setItem("userNombre", res.data.nombre || "Usuario");
+        
+        alert("¡Bienvenido de nuevo!");
+        
+        // 3. REDIRIGIR
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error en login:", error);
+      alert(error.response?.data?.error || "Correo o contraseña incorrectos");
+    }
+  };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#1e1e1e",
-        padding: "40px 20px",
-      }}
-    >
-      {/* TÍTULO */}
-      <motion.h1
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        style={{
-          fontSize: "3rem",
-          fontWeight: "600",
-          color: "#f0f0f0",
-          marginBottom: "20px",
-          textAlign: "center",
-        }}
+    <div style={containerStyle}>
+      <motion.h1 
+        initial={{ y: -50, opacity: 0 }} 
+        animate={{ y: 0, opacity: 1 }} 
+        style={logoStyle}
       >
-        Iniciar sesión
+        OUTFITLAB
       </motion.h1>
 
-      {/* DESCRIPCIÓN */}
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
-        style={{
-          fontSize: "1.2rem",
-          color: "#ccc",
-          textAlign: "center",
-          marginBottom: "30px",
-          maxWidth: "500px",
-          lineHeight: "1.6",
-        }}
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }} 
+        style={cardStyle}
       >
-        Accede a tu cuenta para empezar a probar ropa virtualmente y descubrir tu estilo ideal.
-      </motion.p>
+        <h2 style={{ color: "white", textAlign: "center", marginBottom: "20px" }}>
+          Iniciar Sesión
+        </h2>
 
-      {/* FORMULARIO */}
-      <motion.form
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-        style={{
-          backgroundColor: "#2a2a2a",
-          padding: "30px 40px",
-          borderRadius: "12px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          width: "100%",
-          maxWidth: "400px",
-          boxShadow: "0px 0px 20px rgba(0,0,0,0.4)",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd", fontSize: "1rem" }}>Email</label>
-          <input
-            type="email"
-            placeholder="Introduce tu email"
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #444",
-              backgroundColor: "#1e1e1e",
-              color: "white",
-              fontSize: "1rem",
-            }}
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <input 
+            type="email" 
+            placeholder="Correo electrónico" 
+            required
+            style={inputStyle} 
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
           />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd", fontSize: "1rem" }}>Contraseña</label>
-          <input
-            type="password"
-            placeholder="Introduce tu contraseña"
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #444",
-              backgroundColor: "#1e1e1e",
-              color: "white",
-              fontSize: "1rem",
-            }}
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            required
+            style={inputStyle} 
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
           />
+          
+          <button type="submit" style={buttonStyle}>
+            Entrar
+          </button>
+        </form>
+
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <p style={{ color: "#888", fontSize: "0.9rem", marginBottom: "10px" }}>
+            ¿No tienes una cuenta?
+          </p>
+          <button 
+            type="button"
+            onClick={() => navigate("/register")} 
+            style={secondaryButtonStyle}
+          >
+            Registrarse ahora
+          </button>
         </div>
-
-        <button
-          type="submit"
-          style={{
-            marginTop: "10px",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "none",
-            backgroundColor: "#444",
-            color: "white",
-            fontSize: "1.1rem",
-            cursor: "pointer",
-            transition: "0.3s",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#444")}
-        >
-          Entrar
-        </button>
-      </motion.form>
-
-      {/* 🔙 BOTÓN VOLVER AL INICIO */}
-      <button
-        onClick={() => navigate("/")}
-        style={{
-          marginTop: "25px",
-          padding: "10px 20px",
-          borderRadius: "8px",
-          border: "none",
-          backgroundColor: "#333",
-          color: "white",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-        onMouseOver={(e) => (e.target.style.backgroundColor = "#444")}
-        onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
-      >
-        Volver al inicio
-      </button>
+      </motion.div>
     </div>
   );
 }
+
+// --- ESTILOS ---
+const containerStyle = { minHeight: "100vh", backgroundColor: "#121212", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", fontFamily: "Arial, sans-serif" };
+const logoStyle = { fontSize: "3.5rem", fontWeight: "900", letterSpacing: "8px", color: "white", marginBottom: "30px" };
+const cardStyle = { backgroundColor: "#1e1e1e", padding: "40px", borderRadius: "15px", boxShadow: "0 10px 30px rgba(0,0,0,0.5)", width: "100%", maxWidth: "350px" };
+const inputStyle = { padding: "12px", borderRadius: "8px", border: "1px solid #333", backgroundColor: "#252525", color: "white", outline: "none" };
+const buttonStyle = { padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "#ffffff", color: "#000", fontWeight: "bold", cursor: "pointer" };
+const secondaryButtonStyle = { backgroundColor: "transparent", color: "#3498db", border: "1px solid #3498db", padding: "8px 15px", borderRadius: "8px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "bold", width: "100%" };

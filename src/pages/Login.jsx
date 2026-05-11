@@ -1,141 +1,84 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", password: "" });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Por ahora simulamos el login, luego conectas con tu backend
+    login({ name: "Usuario", email: form.email });
+    navigate("/dashboard");
+  };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
+    <div style={{
+      minHeight: "100vh",
+      backgroundColor: "#121212",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}>
+      <div style={{
         backgroundColor: "#1e1e1e",
-        padding: "40px 20px",
-      }}
-    >
-      {/* TÍTULO */}
-      <motion.h1
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        style={{
-          fontSize: "3rem",
-          fontWeight: "600",
-          color: "#f0f0f0",
-          marginBottom: "20px",
-          textAlign: "center",
-        }}
-      >
-        Iniciar sesión
-      </motion.h1>
+        padding: "40px",
+        borderRadius: "16px",
+        width: "360px",
+        border: "1px solid #2e2e2e",
+      }}>
+        <h2 style={{ color: "white", marginBottom: "28px", textAlign: "center" }}>
+          Iniciar sesión
+        </h2>
 
-      {/* DESCRIPCIÓN */}
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
-        style={{
-          fontSize: "1.2rem",
-          color: "#ccc",
-          textAlign: "center",
-          marginBottom: "30px",
-          maxWidth: "500px",
-          lineHeight: "1.6",
-        }}
-      >
-        Accede a tu cuenta para empezar a probar ropa virtualmente y descubrir tu estilo ideal.
-      </motion.p>
-
-      {/* FORMULARIO */}
-      <motion.form
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-        style={{
-          backgroundColor: "#2a2a2a",
-          padding: "30px 40px",
-          borderRadius: "12px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          width: "100%",
-          maxWidth: "400px",
-          boxShadow: "0px 0px 20px rgba(0,0,0,0.4)",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd", fontSize: "1rem" }}>Email</label>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <input
             type="email"
-            placeholder="Introduce tu email"
+            placeholder="Correo electrónico"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid #444",
-              backgroundColor: "#1e1e1e",
+              border: "1px solid #333",
+              backgroundColor: "#2a2a2a",
               color: "white",
               fontSize: "1rem",
             }}
           />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <label style={{ color: "#ddd", fontSize: "1rem" }}>Contraseña</label>
           <input
             type="password"
-            placeholder="Introduce tu contraseña"
+            placeholder="Contraseña"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid #444",
-              backgroundColor: "#1e1e1e",
+              border: "1px solid #333",
+              backgroundColor: "#2a2a2a",
               color: "white",
               fontSize: "1rem",
             }}
           />
+          <button
+            onClick={handleSubmit}
+            style={{
+              padding: "12px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#555",
+              color: "white",
+              fontSize: "1rem",
+              cursor: "pointer",
+              marginTop: "8px",
+            }}
+          >
+            Entrar
+          </button>
         </div>
-
-        <button
-          type="submit"
-          style={{
-            marginTop: "10px",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "none",
-            backgroundColor: "#444",
-            color: "white",
-            fontSize: "1.1rem",
-            cursor: "pointer",
-            transition: "0.3s",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#444")}
-        >
-          Entrar
-        </button>
-      </motion.form>
-
-      {/* 🔙 BOTÓN VOLVER AL INICIO */}
-      <button
-        onClick={() => navigate("/")}
-        style={{
-          marginTop: "25px",
-          padding: "10px 20px",
-          borderRadius: "8px",
-          border: "none",
-          backgroundColor: "#333",
-          color: "white",
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-        onMouseOver={(e) => (e.target.style.backgroundColor = "#444")}
-        onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
-      >
-        Volver al inicio
-      </button>
+      </div>
     </div>
   );
 }
