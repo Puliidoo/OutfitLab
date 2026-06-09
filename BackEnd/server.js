@@ -22,14 +22,68 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Probar conexión
-pool.connect((err, client, release) => {
-  if (err) {
-    return console.error('❌ Error de conexión:', err.stack);
+// Crear tablas automáticamente si no existen
+async function inicializarDB() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL DEFAULT 'Usuario',
+        email VARCHAR(150) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        fecha TIMESTAMP DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS prendas (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(150),
+        marca VARCHAR(100),
+        categoria VARCHAR(100),
+        imagen_url TEXT
+      );
+      CREATE TABLE IF NOT EXISTS outfits (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(150) DEFAULT 'Look',
+        usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+        imagen_generada TEXT,
+        fecha TIMESTAMP DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS carrito (
+        id SERIAL PRIMARY KEY,
+        usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE
+      );
+      CREATE TABLE IF NOT EXISTS carrito_detalle (
+        id SERIAL PRIMARY KEY,
+        carrito_id INTEGER REFERENCES carrito(id) ON DELETE CASCADE,
+        prenda_id INTEGER REFERENCES prendas(id) ON DELETE CASCADE,
+        cantidad INTEGER DEFAULT 1
+      );
+      CREATE TABLE IF NOT EXISTS busquedas_cache (
+        id SERIAL PRIMARY KEY,
+        garment_hash VARCHAR(64) NOT NULL,
+        category VARCHAR(50) NOT NULL,
+        resultado_url TEXT NOT NULL,
+        usuario_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+        fecha TIMESTAMP DEFAULT NOW(),
+        UNIQUE(garment_hash, category)
+      );
+      CREATE TABLE IF NOT EXISTS busquedas_historial (
+        id SERIAL PRIMARY KEY,
+        usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+        garment_hash VARCHAR(64),
+        model_hash VARCHAR(64),
+        category VARCHAR(50),
+        resultado_url TEXT,
+        desde_cache BOOLEAN DEFAULT FALSE,
+        fecha TIMESTAMP DEFAULT NOW()
+      );
+    `);
+    console.log('✅ Conexión exitosa a PostgreSQL');
+    console.log('✅ Tablas verificadas/creadas correctamente');
+  } catch (err) {
+    console.error('❌ Error al inicializar la base de datos:', err.message);
   }
-  console.log('✅ Conexión exitosa a PostgreSQL');
-  release();
-});
+}
+inicializarDB();
 
 // --- RUTA PARA REGISTRAR USUARIOS ---
 app.post('/api/usuarios', async (req, res) => {
