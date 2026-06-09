@@ -6,12 +6,27 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Por ahora simulamos el login, luego conectas con tu backend
-    login({ name: "Usuario", email: form.email });
-    navigate("/dashboard");
+    setError("");
+    try {
+      const res = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Credenciales incorrectas");
+        return;
+      }
+      login({ name: data.nombre, email: form.email });
+      navigate("/dashboard");
+    } catch {
+      setError("No se puede conectar con el servidor");
+    }
   };
 
   return (
@@ -62,6 +77,11 @@ export default function Login() {
               fontSize: "1rem",
             }}
           />
+          {error && (
+            <p style={{ color: "#ff6b6b", fontSize: "0.9rem", textAlign: "center", margin: 0 }}>
+              {error}
+            </p>
+          )}
           <button
             onClick={handleSubmit}
             style={{
@@ -77,6 +97,16 @@ export default function Login() {
           >
             Entrar
           </button>
+
+          <p style={{ color: "#888", fontSize: "0.9rem", textAlign: "center", margin: 0 }}>
+            ¿No tienes cuenta?{" "}
+            <span
+              onClick={() => navigate("/register")}
+              style={{ color: "#fff", cursor: "pointer", textDecoration: "underline" }}
+            >
+              Regístrate aquí
+            </span>
+          </p>
         </div>
       </div>
     </div>

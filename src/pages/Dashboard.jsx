@@ -20,6 +20,18 @@ const buttons = [
     route: "/carrito",
     desc: "Revisa tus prendas seleccionadas",
   },
+  {
+    label: "Mi Perfil",
+    icon: "👤",
+    route: "/perfil",
+    desc: "Consulta y edita tus datos",
+  },
+  {
+    label: "Mis Looks",
+    icon: "🪞",
+    route: "/mislooks",
+    desc: "Ver los outfits que has generado",
+  },
 ];
 
 export default function Dashboard() {
